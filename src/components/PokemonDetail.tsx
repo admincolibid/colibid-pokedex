@@ -2,11 +2,10 @@ import { Card, CardContent, CardMedia, Stack, Typography } from "@mui/material";
 import React from "react";
 import { Pokemon } from "../utils/types/pokemon";
 
-type Props = { pokemon: Pokemon | null };
+type Props = { pokemon: Pokemon | null; search: string };
 
-export default function PokemonDetail({ pokemon }: Props) {
+export default function PokemonDetail({ pokemon, search }: Props) {
   if (pokemon) {
-    console.log({ pokemon });
     return (
       <Card>
         <div
@@ -36,5 +35,10 @@ export default function PokemonDetail({ pokemon }: Props) {
       </Card>
     );
   }
-  return <div>Not Found</div>;
+
+  return (
+    <Typography align="center" variant="h5">
+      {search} Not Found
+    </Typography>
+  );
 }

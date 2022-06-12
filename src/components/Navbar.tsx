@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useState } from "react";
 import {
   FormControl,
   InputLabel,
@@ -16,6 +16,7 @@ import {
   TextField,
 } from "@mui/material";
 import { PokemonApiResult } from "../utils/types";
+import { PokeReducerState, PokeReducerAction } from "../App";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -61,34 +62,57 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 })) as typeof InputBase;
 
 interface NavbarProps {
-  setSearch: Dispatch<SetStateAction<string>>;
-  color: {
-    color: string;
-    setColor: Dispatch<SetStateAction<string>>;
+  pokeStateReducer: {
+    state: PokeReducerState;
+    dispatch: Dispatch<PokeReducerAction>;
   };
+  // setSearch: Dispatch<SetStateAction<string>>;
+  // color: {
+  //   color: string;
+  //   setColor: Dispatch<SetStateAction<string>>;
+  // };
   colorOptions: {
     colorOptions: PokemonApiResult["results"];
     setColorOptions: Dispatch<SetStateAction<PokemonApiResult["results"]>>;
   };
-  onSelect: (
-    e:
-      | SelectChangeEvent
-      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
+  // searchValues: {
+  //   searchValue: string;
+  //   setSearchValue: Dispatch<SetStateAction<string>>;
+  // };
+  // onSelect: (
+  //   e:
+  //     | SelectChangeEvent
+  //     | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  // ) => void;
 }
 
 export default function Navbar({
-  setSearch,
-  color: { color, setColor },
+  pokeStateReducer: { state, dispatch },
+  // setSearch,
+  // color: { color, setColor },
   colorOptions: { colorOptions, setColorOptions },
-  onSelect,
-}: NavbarProps) {
+}: // searchValues: { searchValue, setSearchValue },
+// onSelect,
+NavbarProps) {
+  const [searchValue, setSearchValue] = useState<string>("");
+
+  const onSelect = (
+    e:
+      | SelectChangeEvent
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ): void => {
+    // setColor(e.target.value);
+    setSearchValue("");
+    dispatch({ type: "getPokemonByColor", payload: e.target.value });
+  };
+
   const searchOnKeyPress = (
     // e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement >
     e: any
   ) => {
     if (e.key === "Enter") {
-      setSearch(e.target.value);
+      dispatch({ type: "getPokemonBySearch", payload: searchValue });
+      // setSearch(searchValue);
     }
   };
 
@@ -108,6 +132,8 @@ export default function Navbar({
             <SearchIcon />
           </SearchIconWrapper>
           <StyledInputBase
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
             onKeyDown={searchOnKeyPress}
             placeholder="Search…"
             inputProps={{ "aria-label": "search" }}
@@ -117,7 +143,7 @@ export default function Navbar({
         <TextField
           sx={{ m: 1, minWidth: 120 }}
           id="colorOption"
-          value={color}
+          value={state.color}
           label="Color"
           onChange={onSelect}
           select
