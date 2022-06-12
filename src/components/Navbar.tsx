@@ -6,7 +6,7 @@ import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import {
   FormControl,
   InputLabel,
@@ -66,42 +66,31 @@ interface NavbarProps {
     state: PokeReducerState;
     dispatch: Dispatch<PokeReducerAction>;
   };
-  // setSearch: Dispatch<SetStateAction<string>>;
-  // color: {
-  //   color: string;
-  //   setColor: Dispatch<SetStateAction<string>>;
-  // };
-  colorOptions: {
-    colorOptions: PokemonApiResult["results"];
-    setColorOptions: Dispatch<SetStateAction<PokemonApiResult["results"]>>;
-  };
-  // searchValues: {
-  //   searchValue: string;
-  //   setSearchValue: Dispatch<SetStateAction<string>>;
-  // };
-  // onSelect: (
-  //   e:
-  //     | SelectChangeEvent
-  //     | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  // ) => void;
 }
 
 export default function Navbar({
   pokeStateReducer: { state, dispatch },
-  // setSearch,
-  // color: { color, setColor },
-  colorOptions: { colorOptions, setColorOptions },
-}: // searchValues: { searchValue, setSearchValue },
-// onSelect,
-NavbarProps) {
+}: NavbarProps) {
   const [searchValue, setSearchValue] = useState<string>("");
+  const [colorOptions, setColorOptions] = useState<PokemonApiResult["results"]>(
+    []
+  );
+
+  useEffect(() => {
+    const pokeColorUrl = "https://pokeapi.co/api/v2/pokemon-color/";
+    const colorUrl = new URL(pokeColorUrl);
+    fetch(colorUrl)
+      .then((res) => res.json())
+      .then((data: PokemonApiResult) => {
+        setColorOptions(data.results);
+      });
+  }, []);
 
   const onSelect = (
     e:
       | SelectChangeEvent
       | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
-    // setColor(e.target.value);
     setSearchValue("");
     dispatch({ type: "getPokemonByColor", payload: e.target.value });
   };
@@ -112,7 +101,6 @@ NavbarProps) {
   ) => {
     if (e.key === "Enter") {
       dispatch({ type: "getPokemonBySearch", payload: searchValue });
-      // setSearch(searchValue);
     }
   };
 
@@ -152,7 +140,7 @@ NavbarProps) {
         >
           <MenuItem value={"all"}>All</MenuItem>
           {colorOptions.map((e) => (
-            <MenuItem key={e.name} value={e.name}>
+            <MenuItem key={e.name} value={e.url}>
               {e.name}
             </MenuItem>
           ))}

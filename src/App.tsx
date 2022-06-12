@@ -1,12 +1,19 @@
 import { useEffect, useReducer, useState } from "react";
 import Navbar from "./components/Navbar";
 
-import { CssBaseline, Container, SelectChangeEvent } from "@mui/material";
+import {
+  CssBaseline,
+  Container,
+  Card,
+  CardContent,
+  Skeleton,
+  Stack,
+  Grid,
+} from "@mui/material";
 import PokemonList from "./components/PokemonList";
 import PokemonDetail from "./components/PokemonDetail";
 import { PokemonApiResult } from "./utils/types";
 import { Pokemon } from "./utils/types/pokemon";
-import { PokemonColor } from "./utils/types/pokemonColor";
 
 const pokeResultInitialState = {
   count: 0,
@@ -51,9 +58,8 @@ const pokeApiReducer = (state: PokeReducerState, action: PokeReducerAction) => {
 
 function App() {
   const [state, dispatch] = useReducer(pokeApiReducer, reducerInitalState);
-  const [colorOptions, setColorOptions] = useState<PokemonApiResult["results"]>(
-    []
-  );
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [pokeResult, setPokeResult] = useState<PokemonApiResult>(
     pokeResultInitialState
@@ -61,37 +67,30 @@ function App() {
   const [pokemon, setPokemon] = useState<Pokemon | null>(null);
 
   useEffect(() => {
-    const pokeColorUrl = "https://pokeapi.co/api/v2/pokemon-color/";
-    const colorUrl = new URL(pokeColorUrl);
-    fetch(colorUrl)
-      .then((res) => res.json())
-      .then((data: PokemonApiResult) => {
-        setColorOptions(data.results);
-      });
-
-    const pokeUrl = new URL("https://pokeapi.co/api/v2/pokemon/");
-    fetch(pokeUrl)
-      .then((res) => res.json())
-      .then((data: PokemonApiResult) => {
-        return setPokeResult(data as PokemonApiResult);
-      })
-      .catch((err) => setPokemon(null));
-  }, []);
-
-  useEffect(() => {
+    setLoading(true);
     if (state.color) {
-      const colorUrl = colorOptions.find((c) => c.name === state.color);
-      fetch(colorUrl?.url as string)
+      //soy generacion vieja mi pokemones eran 151 ( ´･･)ﾉ(._.`)
+      const url =
+        state.color === "all"
+          ? "https://pokeapi.co/api/v2/pokemon?limit=151"
+          : state.color;
+      fetch(url)
         .then((res) => res.json())
         .then((data: any) => {
           setPokemon(null);
-          setPokeResult((prevPoke) => ({
-            ...prevPoke,
-            results: data.pokemon_species,
-          }));
+          if (state.color === "all") {
+            setPokeResult(data);
+          } else {
+            setPokeResult((prevPoke) => ({
+              ...prevPoke,
+              results: data.pokemon_species,
+            }));
+          }
+          setLoading(false);
         });
     } else {
       setPokemon(null);
+      setLoading(false);
     }
 
     if (state.search) {
@@ -100,22 +99,20 @@ function App() {
       fetch(url)
         .then((res) => res.json())
         .then((data: PokemonApiResult | Pokemon) => {
+          setLoading(false);
           if (!state.search) {
-            return setPokeResult(data as PokemonApiResult);
+            setPokeResult(data as PokemonApiResult);
+          } else {
+            setPokemon(data as Pokemon);
           }
-          return setPokemon(data as Pokemon);
-        })
-        .catch((err) => setPokemon(null));
+        });
     }
-  }, [colorOptions, state.color, state.search]);
+  }, [state.color, state.search]);
 
   return (
     <>
       <CssBaseline />
-      <Navbar
-        pokeStateReducer={{ state, dispatch }}
-        colorOptions={{ colorOptions, setColorOptions }}
-      />
+      <Navbar pokeStateReducer={{ state, dispatch }} />
       <Container
         maxWidth="xl"
         // fixed
@@ -123,13 +120,39 @@ function App() {
           paddingTop: 3,
         }}
       >
-        {state.search && (
+        {loading && <SkeletonCardList />}
+        {!loading && state.search && (
           <PokemonDetail pokemon={pokemon} search={state.search} />
         )}
-        {!state.search && <PokemonList pokeResult={pokeResult} />}
+        {!loading && !state.search && <PokemonList pokeResult={pokeResult} />}
       </Container>
     </>
   );
 }
 
 export default App;
+
+function SkeletonCard() {
+  return (
+    <Card>
+      <Skeleton variant="rectangular" width={400} height={400} />
+      <CardContent>
+        <Skeleton variant="text" />
+      </CardContent>
+    </Card>
+  );
+}
+
+function SkeletonCardList() {
+  return (
+    <Stack spacing={2} justifyContent="center" alignItems="center">
+      <Grid container spacing={{ xs: 2, md: 3 }}>
+        {Array.from(Array(10))?.map((e, i) => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+            <SkeletonCard />
+          </Grid>
+        ))}
+      </Grid>
+    </Stack>
+  );
+}
