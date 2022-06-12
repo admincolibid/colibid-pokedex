@@ -1,7 +1,6 @@
 import {
   Modal,
   Typography,
-  Box,
   Card,
   CardMedia,
   CardContent,

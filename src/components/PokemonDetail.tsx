@@ -1,4 +1,4 @@
-import { Card, CardContent, CardMedia, Stack, Typography } from "@mui/material";
+import { Card, CardContent, Typography } from "@mui/material";
 import React from "react";
 import { Pokemon } from "../utils/types/pokemon";
 
@@ -20,6 +20,7 @@ export default function PokemonDetail({ pokemon, search }: Props) {
             height="475"
             width="475"
           />
+          :console.warn();
         </div>
         <CardContent>
           <Typography align="center" variant="h5">{`${pokemon.id}. ${

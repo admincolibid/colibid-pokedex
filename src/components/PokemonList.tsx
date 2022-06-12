@@ -1,4 +1,4 @@
-import { Grid, Stack, Pagination } from "@mui/material";
+import { Grid, Stack } from "@mui/material";
 import { PokemonApiResult } from "../utils/types";
 import PokemonCard from "./PokemonCard";
 

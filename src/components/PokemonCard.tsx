@@ -2,7 +2,7 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
-import { Box, CardActionArea } from "@mui/material";
+import { CardActionArea } from "@mui/material";
 import { PokemonNameAndUrl } from "../utils/types";
 import PokeModal from "./PokeModal";
 import { useState } from "react";
