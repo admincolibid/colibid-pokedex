@@ -1,12 +1,12 @@
 {
   "files": {
-    "main.js": "/colibid-pokedex/static/js/main.46866a66.js",
+    "main.js": "/colibid-pokedex/static/js/main.85c68afe.js",
     "static/js/787.c88dbe18.chunk.js": "/colibid-pokedex/static/js/787.c88dbe18.chunk.js",
     "index.html": "/colibid-pokedex/index.html",
-    "main.46866a66.js.map": "/colibid-pokedex/static/js/main.46866a66.js.map",
+    "main.85c68afe.js.map": "/colibid-pokedex/static/js/main.85c68afe.js.map",
     "787.c88dbe18.chunk.js.map": "/colibid-pokedex/static/js/787.c88dbe18.chunk.js.map"
   },
   "entrypoints": [
-    "static/js/main.46866a66.js"
+    "static/js/main.85c68afe.js"
   ]
 }
